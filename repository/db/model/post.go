@@ -2,6 +2,7 @@ package model
 
 import "gorm.io/gorm"
 
+// Post 文章表
 type Post struct {
 	gorm.Model
 	PostId      int64  `json:"post_id" gorm:"index;not null;unique;comment:帖子id"`

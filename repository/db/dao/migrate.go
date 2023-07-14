@@ -7,6 +7,10 @@ func migrate() (err error) {
 		AutoMigrate(
 			model.User{},
 			model.Post{},
+			model.Community{},
+			model.Comment{},
+			model.UserStar{},
+			model.Follow{},
 		)
 
 	return

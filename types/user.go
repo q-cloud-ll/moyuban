@@ -1,10 +1,9 @@
 package types
 
 type UserRegisterReq struct {
-	NickName string `form:"nick_name" json:"nick_name"`
-	UserName string `form:"user_name" json:"user_name"`
-	Password string `form:"password" json:"password"`
-	Key      string `form:"key" json:"key"` // 前端进行判断
+	UserName   string `json:"user_name" binding:"required"`
+	Password   string `json:"password" binding:"required"`
+	RePassword string `json:"re_password" binding:"required,eqfield=Password"`
 }
 
 type UserInfoResp struct {

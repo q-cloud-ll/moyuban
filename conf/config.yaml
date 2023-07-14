@@ -60,7 +60,7 @@ mysql:
   port: 13306
   user: root
   password: forum123
-  dbname: supermaket
+  dbname: moyuban
   config: charset=utf8mb4&parseTime=true&loc=Local
   log-mode: "debug"
   log-zap: false

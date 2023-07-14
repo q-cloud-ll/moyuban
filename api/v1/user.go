@@ -10,8 +10,6 @@ import (
 	"go.uber.org/zap"
 )
 
-type UserApi struct{}
-
 func UserRegisterHandler(c *gin.Context) {
 	var u types.UserRegisterReq
 	if err := c.ShouldBind(&u); err != nil {

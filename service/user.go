@@ -36,7 +36,6 @@ func (l *UserSrv) UserRegisterSrv(req *types.UserRegisterReq) (err error) {
 		err = consts.UserExistErr
 	}
 	user := &model.User{
-		NickName: req.NickName,
 		UserName: req.UserName,
 		UserId:   snowflake.GenID(),
 		Status:   model.Active,
@@ -78,7 +77,6 @@ func (l *UserSrv) UserLoginSrv(req *types.UserRegisterReq) (resp interface{}, er
 	userResp := &types.UserInfoResp{
 		ID:       user.ID,
 		UserName: user.UserName,
-		NickName: user.NickName,
 		Email:    user.Email,
 		Status:   user.Status,
 		CreateAt: user.CreatedAt.Unix(),

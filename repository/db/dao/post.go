@@ -10,6 +10,8 @@ import (
 var _ PostModel = (*customPostModel)(nil)
 
 type (
+	// PostModel is an interface to be customized, add more methods here,
+	// and implement the added methods in customUserModel.
 	PostModel interface {
 		JudgeCommunityIsExist(ctx context.Context, cid string) (bool, error)
 		CreatePost(ctx context.Context, p *model.Post) error
@@ -33,13 +35,15 @@ func (m *customPostModel) GetPostListByIds(ctx context.Context, ids []string) (r
 	//TODO implement me
 	var list []*model.Post
 
-	err = m.DB.WithContext(ctx).Model(&model.Post{}).Where("post_id in (?)", ids).Clauses(clause.OrderBy{
-		Expression: clause.Expr{
-			SQL:                "FIELD(post_id, ?)",
-			Vars:               []interface{}{ids},
-			WithoutParentheses: true,
-		},
-	}).
+	err = m.DB.WithContext(ctx).Model(&model.Post{}).
+		Where("post_id in (?)", ids).
+		Clauses(clause.OrderBy{
+			Expression: clause.Expr{
+				SQL:                "FIELD(post_id, ?)",
+				Vars:               []interface{}{ids},
+				WithoutParentheses: true,
+			},
+		}).
 		Find(&list).
 		Error
 

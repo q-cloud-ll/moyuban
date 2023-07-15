@@ -15,6 +15,7 @@ type (
 	UserModel interface {
 		CreateUser(ctx context.Context, user *model.User) error
 		ExistOrNotByUserName(ctx context.Context, userName string) (user *model.User, exist bool, err error)
+		GetUserInfo(ctx context.Context, uid int64) (user *model.User, err error)
 	}
 
 	customUserModel struct {
@@ -26,6 +27,16 @@ func NewUserModel() UserModel {
 	return &customUserModel{
 		DB: NewDBClient(),
 	}
+}
+
+func (m *customUserModel) GetUserInfo(ctx context.Context, uid int64) (user *model.User, err error) {
+	//TODO implement me
+	err = m.DB.WithContext(ctx).
+		Model(&model.User{}).
+		Select("user_id, nickname, user_name, avatar").
+		Where("user_id = ?", uid).
+		Find(&user).
+		Error
 }
 
 func (m *customUserModel) CreateUser(ctx context.Context, user *model.User) error {

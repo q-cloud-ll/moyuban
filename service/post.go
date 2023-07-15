@@ -53,14 +53,16 @@ func (l *PostSrv) CreatePostSrv(req *types.PostReq) (err error) {
 
 // GetPostListSrv 获取帖子列表
 func (l *PostSrv) GetPostListSrv(req *types.PostListReq) (resp interface{}, total int64, err error) {
-	if req.CommunityID == 0 {
-		resp, total, err = GetAllPostListSrv(l, req)
+	if req.CommunityID == "" {
+		resp, total, err = l.GetAllPostListSrv(req)
+	} else {
+		resp, total, err = l.GetCommunityPostList(req)
 	}
 	return
 }
 
 // GetAllPostListSrv 获取所有帖子列表
-func GetAllPostListSrv(l *PostSrv, req *types.PostListReq) (resp interface{}, total int64, err error) {
+func (l *PostSrv) GetAllPostListSrv(req *types.PostListReq) (resp interface{}, total int64, err error) {
 	ids, err := l.svcCtx.PostCache.GetPostIdsOrder(l.ctx, req)
 
 	if err != nil {
@@ -71,11 +73,89 @@ func GetAllPostListSrv(l *PostSrv, req *types.PostListReq) (resp interface{}, to
 		return nil, 0, consts.PostGetRedisIdsErr
 	}
 
-	//posts, err := l.svcCtx.PostModel.GetPostListByIds(l.ctx, ids)
-	//if err != nil {
-	//	return nil, 0, err
-	//}
-	//
-	//l.svcCtx.PostCache
+	posts, err := l.svcCtx.PostModel.GetPostListByIds(l.ctx, ids)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var data []*types.PostDetailResp
+	for _, post := range posts.([]*model.Post) {
+		user, err := l.svcCtx.UserSvc.UserModel.GetUserInfo(l.ctx, post.AuthorId)
+		if err != nil {
+			zap.L().Error("GetUserInfo(l.ctx, post.AuthorId) failed",
+				zap.Any("author_id", post.AuthorId),
+				zap.Error(err))
+			continue
+		}
+		community, err := l.svcCtx.CommunityModel.GetCommunityDetailById(l.ctx, post.CommunityId)
+		if err != nil {
+			zap.L().Error("GetCommunityDetailById(l.ctx,post.CommunityId) failed",
+				zap.Any("author_id", post.AuthorId),
+				zap.Error(err))
+			continue
+		}
+		postDetail := &types.PostDetailResp{
+			AuthorName: user.Nickname,
+			Avatar:     user.Avatar,
+			//VoteNum:      voteData[idx],
+			Post:      post,
+			Community: community,
+		}
+		data = append(data, postDetail)
+	}
+
+	total = int64(len(data))
+
+	return data, total, err
+}
+
+func (l *PostSrv) GetCommunityPostList(req *types.PostListReq) (resp interface{}, total int64, err error) {
+	ids, err := l.svcCtx.PostCache.GetCommunityPostsIdsInorder(l.ctx, req)
+	if err != nil {
+		return nil, 0, err
+	}
+	if len(ids) == 0 {
+		return nil, 0, consts.PostGetRedisIdsErr
+	}
+
+	posts, err := l.svcCtx.PostModel.GetPostListByIds(l.ctx, ids)
+	if err != nil {
+		return nil, 0, consts.PostGetRedisIdsErr
+	}
+
+	//voteData, err := FrmGetPostVoteData(ids)
+	var data []*types.PostDetailResp
+	for _, post := range posts.([]*model.Post) {
+		user, err := l.svcCtx.UserSvc.UserModel.GetUserInfo(l.ctx, post.AuthorId)
+		if err != nil {
+			zap.L().Error("GetUserInfo(l.ctx, post.AuthorId) failed",
+				zap.Any("author_id", post.AuthorId),
+				zap.Error(err))
+			continue
+		}
+		community, err := l.svcCtx.CommunityModel.GetCommunityDetailById(l.ctx, post.CommunityId)
+		if err != nil {
+			zap.L().Error("GetCommunityDetailById(l.ctx,post.CommunityId) failed",
+				zap.Any("author_id", post.AuthorId),
+				zap.Error(err))
+			continue
+		}
+
+		postDetail := &types.PostDetailResp{
+			AuthorName: user.UserName,
+			Avatar:     user.Avatar,
+			Post:       post,
+			Community:  community,
+		}
+		data = append(data, postDetail)
+	}
+	total = int64(len(data))
 	return
 }
+
+//func (l *PostSrv) GetPostVoteData(ids []string) (data []int64, err error) {
+//	data = make([]int64, 0, len(ids))
+//	for _, id := range ids {
+//		v, _ :=
+//	}
+//}

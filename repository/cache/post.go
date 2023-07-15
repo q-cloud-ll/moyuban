@@ -14,6 +14,7 @@ type (
 	PostCache interface {
 		CreatePost(ctx context.Context, pid, cid string) error
 		GetPostIdsOrder(ctx context.Context, p *types.PostListReq) ([]string, error)
+		GetCommunityPostsIdsInorder(ctx context.Context, p *types.PostListReq) ([]string, error)
 	}
 	customPostCache struct {
 		*redis.Client
@@ -24,6 +25,33 @@ func NewPostCache() PostCache {
 	return &customPostCache{
 		Client: RedisClient,
 	}
+}
+
+// GetCommunityPostsIdsInorder 根据社区查询帖子id
+func (c *customPostCache) GetCommunityPostsIdsInorder(ctx context.Context, p *types.PostListReq) ([]string, error) {
+	//TODO implement me
+	orderKey := getRedisKey(KeyPostTimeZSet)
+	if p.Order == consts.OrderScore {
+		orderKey = getRedisKey(KeyPostScoreZSet)
+	}
+
+	cKey := getRedisKey(KeyCommunitySetPF + p.CommunityID)
+	key := orderKey + p.CommunityID
+	if c.Exists(ctx, key).Val() < 1 {
+		pipeline := c.Pipeline()
+		pipeline.ZInterStore(ctx, key, &redis.ZStore{
+			Aggregate: "MAX",
+			Keys:      []string{cKey, orderKey},
+		})
+		pipeline.Expire(ctx, key, 3*time.Second)
+		_, err := pipeline.Exec(ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return c.GetIdsFormKey(ctx, key, p.Page, p.PageSize)
+
 }
 
 // GetPostIdsOrder 从redis中获取id

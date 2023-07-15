@@ -1,5 +1,7 @@
 package types
 
+import "project/repository/db/model"
+
 type PostReq struct {
 	CommunityId string `json:"community_id"`
 	Title       string `json:"title"`
@@ -7,8 +9,16 @@ type PostReq struct {
 }
 
 type PostListReq struct {
-	CommunityID int64  `json:"community_id" form:"community_id"`
 	Page        int64  `json:"page" form:"page"`         // 页码
 	PageSize    int64  `json:"pageSize" form:"pageSize"` // 每页大小
+	CommunityID string `json:"community_id" form:"community_id"`
 	Order       string `json:"order" form:"order" example:"score"`
+}
+
+type PostDetailResp struct {
+	AuthorName       string `json:"author_name"`
+	Avatar           string `json:"avatar"`
+	VoteNum          int64  `json:"vote_num"`
+	*model.Post      `json:"post"`
+	*model.Community `json:"community"`
 }

@@ -7,5 +7,6 @@ const (
 )
 
 var (
-	PostGetRedisIdsErr = errors.New("redis.GetPostIdsInOrder(p) return 0 data")
+	PostGetRedisIdsErr = errors.New("查询帖子缓存失败")
+	PostListByIdsErr   = errors.New("查询帖子失败")
 )

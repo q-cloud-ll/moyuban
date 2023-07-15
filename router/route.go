@@ -44,10 +44,13 @@ func SetupRouter() *gin.Engine {
 		v1.POST("signin", api.UserLoginHandler)
 	}
 
+	{
+		v1.GET("post", api.GetPostListHandler)
+	}
 	// ---------------- 使用jwt鉴权接口路由 ---------------
 	v1.Use(middlewares.JWTAuth())
 	{
-
+		v1.POST("post", api.CreatePostHandler)
 	}
 	//pprof.Register(r) // 注册pprof相关路由
 

@@ -2,10 +2,8 @@ package server
 
 import (
 	"fmt"
-	"project/setting"
-	"project/utils"
-
 	"go.uber.org/zap"
+	"project/setting"
 
 	"github.com/gin-gonic/gin"
 
@@ -17,9 +15,9 @@ type server interface {
 }
 
 func RunWindowServer(router *gin.Engine) {
-	if err := utils.InitTrans("zh"); err != nil {
-		panic(fmt.Errorf("failed to initialize translator: %v", err))
-	}
+	//if err := utils.InitTrans("zh"); err != nil {
+	//	panic(fmt.Errorf("failed to initialize translator: %v", err))
+	//}
 	address := fmt.Sprintf(":%d", setting.Conf.Port)
 	s := initServer(address, router)
 	// 保证文本顺序输出

@@ -11,11 +11,12 @@ var _ PostModel = (*customPostModel)(nil)
 
 type (
 	// PostModel is an interface to be customized, add more methods here,
-	// and implement the added methods in customUserModel.
+	// and implement the added methods in customPostModel.
 	PostModel interface {
 		JudgeCommunityIsExist(ctx context.Context, cid string) (bool, error)
 		CreatePost(ctx context.Context, p *model.Post) error
 		GetPostListByIds(ctx context.Context, ids []string) (resp interface{}, err error)
+		GetPostDetailById(ctx context.Context, pid string) (resp interface{}, err error)
 	}
 
 	customPostModel struct {
@@ -28,6 +29,20 @@ func NewPostModel() PostModel {
 	return &customPostModel{
 		DB: NewDBClient(),
 	}
+}
+
+// GetPostDetailById 查看帖子详情
+func (m *customPostModel) GetPostDetailById(ctx context.Context, pid string) (resp interface{}, err error) {
+	//TODO implement me
+	var post model.Post
+	err = m.DB.WithContext(ctx).
+		Model(&model.Post{}).
+		Select("post_id,content,like_num,author_id,title,community_id, created_at").
+		Where("post_id = ?", pid).
+		Find(&post).
+		Error
+
+	return post, err
 }
 
 // GetPostListByIds 通过ids查询帖子列表

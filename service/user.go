@@ -37,6 +37,7 @@ func (l *UserSrv) UserRegisterSrv(req *types.UserRegisterReq) (err error) {
 	}
 	user := &model.User{
 		UserName: req.UserName,
+		NickName: req.NickName,
 		UserId:   snowflake.GenID(),
 		Status:   model.Active,
 	}
@@ -54,7 +55,7 @@ func (l *UserSrv) UserRegisterSrv(req *types.UserRegisterReq) (err error) {
 	return
 }
 
-func (l *UserSrv) UserLoginSrv(req *types.UserRegisterReq) (resp interface{}, err error) {
+func (l *UserSrv) UserLoginSrv(req *types.UserLoginReq) (resp interface{}, err error) {
 	var user *model.User
 	user, exist, err := l.svcCtx.UserModel.ExistOrNotByUserName(l.ctx, req.UserName)
 
@@ -78,6 +79,7 @@ func (l *UserSrv) UserLoginSrv(req *types.UserRegisterReq) (resp interface{}, er
 		ID:       user.ID,
 		UserName: user.UserName,
 		Email:    user.Email,
+		NickName: user.NickName,
 		Status:   user.Status,
 		CreateAt: user.CreatedAt.Unix(),
 	}

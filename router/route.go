@@ -40,17 +40,21 @@ func SetupRouter() *gin.Engine {
 
 	// ---------------- 不使用jwt鉴权接口路由 ---------------
 	{
-		v1.POST("signup", api.UserRegisterHandler)
-		v1.POST("signin", api.UserLoginHandler)
+		v1.POST("user/signup", api.UserRegisterHandler)
+		v1.POST("user/signin", api.UserLoginHandler)
 	}
 
 	{
-		v1.GET("post", api.GetPostListHandler)
+		v1.GET("post/postList", api.GetPostListHandler)
+		v1.GET("post/postDetail/:id", api.PostDetailHandler)
 	}
 	// ---------------- 使用jwt鉴权接口路由 ---------------
 	v1.Use(middlewares.JWTAuth())
 	{
-		v1.POST("post", api.CreatePostHandler)
+		v1.POST("post/post", api.CreatePostHandler)
+	}
+	{
+		v1.POST("star/starPost", api.StarPostHandler)
 	}
 	//pprof.Register(r) // 注册pprof相关路由
 

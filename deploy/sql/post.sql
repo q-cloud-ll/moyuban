@@ -1,0 +1,4 @@
+insert into community (id, created_at, community_name,community_id, introduction) values(1, '2023-07-15 16:56:34','旅游专区', '16875882010382337', '绿绿悠悠，旅旅游游');
+insert into community (id, created_at, community_name,community_id, introduction) values(2, '2023-07-15 16:56:45','数学专区', '16875882010382336', 'math,math,i love');
+insert into community (id, created_at, community_name,community_id, introduction) values(3, '2023-07-15 16:56:46','Java专区', '16875882010382338', 'public class main');
+insert into community (id, created_at, community_name,community_id, introduction) values(4, '2023-07-15 16:56:56','吃瓜专区', '16875882010382339', 'ikun u not problem，真爱粉');

@@ -37,6 +37,7 @@ func (m *customUserModel) GetUserInfo(ctx context.Context, uid int64) (user *mod
 		Where("user_id = ?", uid).
 		Find(&user).
 		Error
+	return
 }
 
 func (m *customUserModel) CreateUser(ctx context.Context, user *model.User) error {

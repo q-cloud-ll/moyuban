@@ -22,3 +22,11 @@ type PostDetailResp struct {
 	*model.Post      `json:"post"`
 	*model.Community `json:"community"`
 }
+
+// PostContentDetailResp 帖子详情
+type PostContentDetailResp struct {
+	VoteNum          int64 `json:"vote_num"`
+	*model.Post      `json:"post"`
+	*model.User      `json:"user"`
+	*model.Community `json:"community"`
+}

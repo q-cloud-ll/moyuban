@@ -17,11 +17,11 @@ type User struct {
 	Enable      int        `json:"enable" gorm:"default:1;comment:用户是否被冻结 1正常 2冻结"` //用户是否被冻结 1正常 2冻结
 	CommentNum  uint32     `json:"comment_num"`
 	ArticleNum  uint32     `json:"article_num"`
-	Status      string     `json:"status"   gorm:"size:5"`
+	Status      string     `json:"status"   gorm:"size:10"`
 	Company     string     `json:"company"   gorm:"size:500"`
 	WxOpenid    string     `json:"wx_openid"   gorm:"size:500"`
 	RealName    string     `json:"real_name" gorm:"size:120"`
-	Nickname    string     `json:"nickname" gorm:"size:120"`
+	NickName    string     `json:"nick_name" gorm:"size:120"`
 	UserName    string     `json:"user_name"  gorm:"size:120"`
 	Password    string     `json:"-"  gorm:"size:120"`
 	Mobile      string     `json:"mobile"  gorm:"size:120"`

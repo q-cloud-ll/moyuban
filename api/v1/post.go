@@ -73,3 +73,18 @@ func GetPostListHandler(c *gin.Context) {
 		PageSize: p.PageSize,
 	})
 }
+
+// PostDetailHandler 获取帖子详情
+func PostDetailHandler(c *gin.Context) {
+	pidStr := c.Param("id")
+	ps := service.NewPostService(c.Request.Context(), svc.NewPostServiceContext())
+	data, err := ps.PostDetailSrv(pidStr)
+
+	if err != nil {
+		zap.L().Error("获取帖子详情失败", zap.Error(err))
+		app.ResponseError(c, app.CodeSeverError)
+		return
+	}
+
+	app.ResponseSuccess(c, data)
+}

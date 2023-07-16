@@ -30,6 +30,7 @@ func main() {
 	server.RunWindowServer(r)
 	fmt.Println("Starting configuration success...")
 	_ = r.Run(fmt.Sprintf(":%d", setting.Conf.Port))
+
 }
 
 func loadingConfig() {

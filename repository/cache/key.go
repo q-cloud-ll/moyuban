@@ -33,3 +33,7 @@ const (
 func getRedisKey(key string) string {
 	return PreFix + key
 }
+
+func getStarRedisKey(postId string, userId string) string {
+	return postId + KeyVotedHSetPF + userId
+}

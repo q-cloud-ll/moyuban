@@ -5,18 +5,14 @@ import (
 	"project/repository/db/dao"
 )
 
-type PostServiceContext struct {
-	PostCache      cache.PostCache
-	PostModel      dao.PostModel
-	CommunityModel dao.CommunityModel
-	UserSvc        *UserServiceContext
+type StarServiceContext struct {
+	StarModel dao.UserStarModel
+	StarCache cache.StarCache
 }
 
-func NewPostServiceContext() *PostServiceContext {
-	return &PostServiceContext{
-		PostCache:      cache.NewPostCache(),
-		PostModel:      dao.NewPostModel(),
-		CommunityModel: dao.NewCommunity(),
-		UserSvc:        NewUserServiceContext(),
+func NewStarServiceContext() *StarServiceContext {
+	return &StarServiceContext{
+		StarModel: dao.NewUserStarModel(),
+		StarCache: cache.NewStarCache(),
 	}
 }

@@ -8,6 +8,7 @@ import (
 	zhTrans "github.com/go-playground/validator/v10/translations/zh"
 	"go.uber.org/zap"
 	"project/utils/app"
+	"reflect"
 )
 
 func Validate(ctx context.Context, data interface{}) (string, int64) {
@@ -18,7 +19,9 @@ func Validate(ctx context.Context, data interface{}) (string, int64) {
 	if err != nil {
 		zap.L().Info("validate err:", zap.Error(err))
 	}
-
+	validate.RegisterTagNameFunc(func(field reflect.StructField) string {
+		return field.Tag.Get("label")
+	})
 	err = validate.StructCtx(ctx, data)
 	if err != nil {
 		for _, v := range err.(validator.ValidationErrors) {

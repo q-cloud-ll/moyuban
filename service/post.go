@@ -95,7 +95,7 @@ func (l *PostSrv) GetAllPostListSrv(req *types.PostListReq) (resp interface{}, t
 			continue
 		}
 		postDetail := &types.PostDetailResp{
-			AuthorName: user.Nickname,
+			AuthorName: user.NickName,
 			Avatar:     user.Avatar,
 			//VoteNum:      voteData[idx],
 			Post:      post,
@@ -150,6 +150,40 @@ func (l *PostSrv) GetCommunityPostList(req *types.PostListReq) (resp interface{}
 		data = append(data, postDetail)
 	}
 	total = int64(len(data))
+	return
+}
+
+func (l *PostSrv) PostDetailSrv(pid string) (resp interface{}, err error) {
+	post, err := l.svcCtx.PostModel.GetPostDetailById(l.ctx, pid)
+	if err != nil {
+		zap.L().Error("GetPostDetailById(pid) failed",
+			zap.String("pid", pid),
+			zap.Error(err))
+		return
+	}
+
+	user, err := l.svcCtx.UserSvc.UserModel.GetUserInfo(l.ctx, post.(*model.Post).AuthorId)
+	if err != nil {
+		zap.L().Error("GetUserInfo(post.(*model.Post).AuthorId) failed",
+			zap.String("post.(*model.Post).AuthorId", strconv.FormatInt(post.(*model.Post).AuthorId, 10)),
+			zap.Error(err))
+		return
+	}
+
+	community, err := l.svcCtx.CommunityModel.GetCommunityDetailById(l.ctx, post.(*model.Post).CommunityId)
+	if err != nil {
+		zap.L().Error("GetCommunityDetailById(l.ctx,post.(*model.Post).CommunityId) failed",
+			zap.String("post.(*model.Post).CommunityId", strconv.FormatInt(post.(*model.Post).CommunityId, 10)),
+			zap.Error(err))
+		return
+	}
+
+	resp = &types.PostContentDetailResp{
+		Post:      post.(*model.Post),
+		User:      user,
+		Community: community,
+	}
+
 	return
 }
 

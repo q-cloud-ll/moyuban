@@ -10,6 +10,8 @@ import (
 var _ CommunityModel = (*customCommunityModel)(nil)
 
 type (
+	// CommunityModel is an interface to be customized, add more methods here,
+	// and implement the added methods in customCommunityModel.
 	CommunityModel interface {
 		GetCommunityDetailById(ctx context.Context, id int64) (cd *model.Community, err error)
 	}

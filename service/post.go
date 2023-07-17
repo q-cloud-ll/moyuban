@@ -27,10 +27,11 @@ func NewPostService(ctx context.Context, svcCtx *svc.PostServiceContext) *PostSr
 }
 
 // CreatePostSrv 创建帖子服务
-func (l *PostSrv) CreatePostSrv(req *types.PostReq) (err error) {
+func (l *PostSrv) CreatePostSrv(uid int64, req *types.PostReq) (err error) {
 	cid, _ := strconv.ParseInt(req.CommunityId, 10, 64)
 	pid := snowflake.GenID()
 	post := &model.Post{
+		AuthorId:    uid,
 		PostId:      pid,
 		CommunityId: cid,
 		Title:       req.Title,

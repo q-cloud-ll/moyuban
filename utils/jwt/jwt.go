@@ -19,6 +19,7 @@ type BaseClaims struct {
 	UID      int64
 	ID       uint
 	Username string
+	Mobile   string
 }
 
 type JWT struct {
@@ -90,6 +91,7 @@ func (j *JWT) ParseRefreshToken(aToken, rToken string) (newAToken, newRToken str
 		UID:      accessClaims.UID,
 		ID:       accessClaims.ID,
 		Username: accessClaims.Username,
+		Mobile:   accessClaims.Mobile,
 	}
 	if accessClaims.ExpiresAt > time.Now().Unix() {
 

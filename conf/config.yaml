@@ -37,6 +37,14 @@ log:
   max_age: 30
   max_backups: 7
 
+phone:
+  region_id: cn-hangzhou
+  access_key_id: LTAI5tS3aPbrMy28D9bAWVNP
+  access_key_secret: qgzyEW4cA3Mp7OYDYcGwx4RPBl7iyw
+  sign_name: 特觅科
+  template_code: SMS_244860236
+  scheme: https
+
 es:
   es_host: 127.0.0.1
   es_port: 9200
@@ -72,3 +80,13 @@ redis:
   password: forum123
   db: 0
   pool_size: 100
+
+qiniu-oss:
+  enable: oss
+  zone: ZoneHuaDong
+  bucket: moyuban-oss
+  use-https: false
+  access-key: uoEZIYY7RWonxPew5VRflm4j-G60tAgFFvs5AoDE
+  secret-key: SiAXOWJy2oUjNWxHxKUX12hAVcTM9zooZAfEQPW_
+  img-path: rxx2xz5zb.hd-bkt.clouddn.com
+  use-cdn-domains: false

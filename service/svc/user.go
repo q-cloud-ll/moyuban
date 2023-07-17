@@ -11,11 +11,13 @@ type UserServiceContext struct {
 	RedisClient *redis.Client
 
 	UserModel dao.UserModel
+	UserCache cache.UserCache
 }
 
 func NewUserServiceContext() *UserServiceContext {
 	return &UserServiceContext{
 		RedisClient: cache.RedisClient,
 		UserModel:   dao.NewUserModel(),
+		UserCache:   cache.NewUserCache(),
 	}
 }

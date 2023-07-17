@@ -6,6 +6,7 @@ import (
 	"project/types"
 	"project/utils"
 	"project/utils/app"
+	"project/utils/captcha"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
@@ -32,14 +33,14 @@ func UserRegisterHandler(c *gin.Context) {
 		return
 	}
 
-	app.ResponseSuccess(c, nil)
+	app.ResponseSuccess(c, app.CodeSuccess)
 }
 
 func UserLoginHandler(c *gin.Context) {
 	var req types.UserLoginReq
-	if err := c.ShouldBind(&req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		zap.L().Error("UserLoginHandler param with invalid", zap.Error(err))
-		app.ResponseErrorWithMsg(c, err.Error())
+		app.ResponseErrorWithMsg(c, app.CodeInvalidParam)
 		return
 	}
 
@@ -47,6 +48,52 @@ func UserLoginHandler(c *gin.Context) {
 	resp, err := us.UserLoginSrv(&req)
 	if err != nil {
 		zap.L().Error("UserLoginHandler failed,err:", zap.Error(err))
+		app.ResponseErrorWithMsg(c, err.Error())
+		return
+	}
+
+	app.ResponseSuccess(c, resp)
+}
+
+func UserSendMsgHandler(c *gin.Context) {
+	var req types.UserSendMsgReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		zap.L().Error("UserSendMsgHandler param with invalid", zap.Error(err))
+		app.ResponseErrorWithMsg(c, app.CodeInvalidParam)
+		return
+	}
+	msg, code := utils.Validate(c, &req)
+	if code != int64(app.CodeSuccess) {
+		zap.L().Error("UserSendMsgHandler validation error", zap.String("err:", msg))
+		app.ResponseErrorWithMsg(c, msg)
+		return
+	}
+	if err := captcha.SendMessage(c.Request.Context(), req.Mobile, utils.GenerateVerificationCode()); err != nil {
+		app.ResponseErrorWithMsg(c, err.Error())
+		return
+	}
+
+	app.ResponseSuccess(c, app.CodeSuccess)
+}
+
+func UserPhoneLoginHandler(c *gin.Context) {
+	var req types.UserPhoneLoginReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		zap.L().Error("UserPhoneLoginHandler param with invalid", zap.Error(err))
+		app.ResponseErrorWithMsg(c, app.CodeInvalidParam)
+		return
+	}
+	msg, code := utils.Validate(c, &req)
+	if code != int64(app.CodeSuccess) {
+		zap.L().Error("UserPhoneLoginHandler validation error", zap.String("err:", msg))
+		app.ResponseErrorWithMsg(c, msg)
+		return
+	}
+
+	us := service.NewUserService(c.Request.Context(), svc.NewUserServiceContext())
+	resp, err := us.UserPhoneLoginSrv(&req)
+	if err != nil {
+		zap.L().Error("UserPhoneLoginSrv failed,err:", zap.Error(err))
 		app.ResponseErrorWithMsg(c, err.Error())
 		return
 	}

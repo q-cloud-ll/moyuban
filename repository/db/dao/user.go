@@ -16,6 +16,7 @@ type (
 		CreateUser(ctx context.Context, user *model.User) error
 		ExistOrNotByUserName(ctx context.Context, userName string) (user *model.User, exist bool, err error)
 		GetUserInfo(ctx context.Context, uid int64) (user *model.User, err error)
+		ExistOrNotByMobile(ctx context.Context, mobile string) (user *model.User, exist bool, err error)
 	}
 
 	customUserModel struct {
@@ -27,6 +28,22 @@ func NewUserModel() UserModel {
 	return &customUserModel{
 		DB: NewDBClient(),
 	}
+}
+
+func (m *customUserModel) ExistOrNotByMobile(ctx context.Context, mobile string) (user *model.User, exist bool, err error) {
+	//TODO implement me
+	var count int64
+	err = m.DB.WithContext(ctx).Model(&model.User{}).Where("mobile = ?", mobile).Count(&count).Error
+	if count == 0 {
+		return nil, false, err
+	}
+	err = m.DB.WithContext(ctx).Model(&model.User{}).Where("mobile = ?", mobile).First(&user).Error
+
+	if err != nil {
+		return user, false, err
+	}
+	return user, true, nil
+
 }
 
 func (m *customUserModel) GetUserInfo(ctx context.Context, uid int64) (user *model.User, err error) {
@@ -51,7 +68,7 @@ func (m *customUserModel) ExistOrNotByUserName(ctx context.Context, userName str
 	if count == 0 {
 		return user, false, err
 	}
-	err = m.DB.Model(&model.User{}).Where("user_name = ?", userName).First(&user).Error
+	err = m.DB.WithContext(ctx).Model(&model.User{}).Where("user_name = ?", userName).First(&user).Error
 	if err != nil {
 		return user, false, err
 	}

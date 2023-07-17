@@ -25,12 +25,35 @@ type AppConfig struct {
 	*CORS            `mapstructure:"cors"`
 	*JWT             `mapstructure:"jwt"`
 	*SnowflakeConfig `mapstructure:"snowflake"`
+	*IPhoneMsgConfig `mapstructure:"phone"`
+	*QiNiuOssConfig  `mapstructure:"qiniu-oss"`
 	*LogConfig       `mapstructure:"log"`
 	*EsConfig        `mapstructure:"es"`
 	*JaegerConfig    `mapstructure:"jaeger"`
 	*RabbitMqConfig  `mapstructure:"rabbitmq"`
 	*MySQLConfig     `mapstructure:"mysql"`
 	*RedisConfig     `mapstructure:"redis"`
+}
+
+type QiNiuOssConfig struct {
+	Enable        string `mapstructure:"enable"`
+	Zone          string `mapstructure:"zone"`
+	Bucket        string `mapstructure:"bucket"`
+	AccessKey     string `mapstructure:"access-key"`
+	SecretKey     string `mapstructure:"secret-key"`
+	ImgPath       string `mapstructure:"img-path"`
+	UseHttps      bool   `mapstructure:"use-https"`
+	UseCdnDomains bool   `mapstructure:"use-cdn-domains"` //
+
+}
+
+type IPhoneMsgConfig struct {
+	RegionId        string `mapstructure:"region_id"`
+	AccessKeyId     string `mapstructure:"access_key_id"`
+	AccessKeySecret string `mapstructure:"access_key_secret"`
+	SignName        string `mapstructure:"sign_name"`
+	TemplateCode    string `mapstructure:"template_code"`
+	Scheme          string `mapstructure:"scheme"`
 }
 
 type JaegerConfig struct {

@@ -9,6 +9,7 @@ import (
 	"go.uber.org/zap"
 	"project/utils/app"
 	"reflect"
+	"regexp"
 )
 
 func Validate(ctx context.Context, data interface{}) (string, int64) {
@@ -19,6 +20,7 @@ func Validate(ctx context.Context, data interface{}) (string, int64) {
 	if err != nil {
 		zap.L().Info("validate err:", zap.Error(err))
 	}
+	validate.RegisterValidation("mobile", validateMobile)
 	validate.RegisterTagNameFunc(func(field reflect.StructField) string {
 		return field.Tag.Get("label")
 	})
@@ -29,6 +31,13 @@ func Validate(ctx context.Context, data interface{}) (string, int64) {
 		}
 	}
 	return "", int64(app.CodeSuccess)
+}
+
+func validateMobile(fl validator.FieldLevel) bool {
+	mobile := fl.Field().String()
+	pattern := `^1[3-9]\d{9}$`
+	re := regexp.MustCompile(pattern)
+	return re.MatchString(mobile)
 }
 
 //// 定义一个全局翻译器T

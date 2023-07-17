@@ -3,9 +3,9 @@ package types
 import "project/repository/db/model"
 
 type PostReq struct {
-	CommunityId string `json:"community_id"`
+	CommunityId string `json:"community_id" validate:"required"`
 	Title       string `json:"title"`
-	Content     string `json:"content"`
+	Content     string `json:"content" validate:"required,max=1000"`
 }
 
 type PostListReq struct {

@@ -24,7 +24,7 @@ type User struct {
 	NickName    string     `json:"nick_name" gorm:"size:120"`
 	UserName    string     `json:"user_name"  gorm:"size:120"`
 	Password    string     `json:"-"  gorm:"size:120"`
-	Mobile      string     `json:"mobile"  gorm:"size:120"`
+	Mobile      string     `json:"mobile"  gorm:"size:11"`
 	Email       string     `json:"email" gorm:"size:120"`
 	Blog        string     `json:"facebook"   gorm:"size:3000"`
 	Avatar      string     `json:"avatar" gorm:"default:https://qmplusimg.henrongyi.top/gva_header.jpg;comment:用户头像"`

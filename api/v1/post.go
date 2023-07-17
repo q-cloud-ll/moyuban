@@ -26,15 +26,15 @@ func CreatePostHandler(c *gin.Context) {
 		app.ResponseErrorWithMsg(c, msg)
 		return
 	}
-
+	u, _ := app.GetUserInfo(c)
 	ps := service.NewPostService(c.Request.Context(), svc.NewPostServiceContext())
-	if err := ps.CreatePostSrv(&req); err != nil {
+	if err := ps.CreatePostSrv(u.UID, &req); err != nil {
 		zap.L().Error("CreatePostSrv failed,err:", zap.Error(err))
 		app.ResponseErrorWithMsg(c, err.Error())
 		return
 	}
 
-	app.ResponseSuccess(c, nil)
+	app.ResponseSuccess(c, app.CodeSuccess)
 }
 
 // GetPostListHandler 获取帖子列表接口

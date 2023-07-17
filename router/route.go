@@ -42,6 +42,8 @@ func SetupRouter() *gin.Engine {
 	{
 		v1.POST("user/signup", api.UserRegisterHandler)
 		v1.POST("user/signin", api.UserLoginHandler)
+		v1.POST("user/sendMsg", api.UserSendMsgHandler)
+		v1.POST("user/phoneLogin", api.UserPhoneLoginHandler)
 	}
 
 	{

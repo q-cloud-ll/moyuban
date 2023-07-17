@@ -58,6 +58,9 @@ func SetupRouter() *gin.Engine {
 	{
 		v1.POST("star/starPost", api.StarPostHandler)
 	}
+	{
+		v1.POST("upload", api.UploadFileHandler)
+	}
 	//pprof.Register(r) // 注册pprof相关路由
 
 	r.NoRoute(func(c *gin.Context) {

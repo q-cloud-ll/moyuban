@@ -27,12 +27,18 @@ type AppConfig struct {
 	*SnowflakeConfig `mapstructure:"snowflake"`
 	*IPhoneMsgConfig `mapstructure:"phone"`
 	*QiNiuOssConfig  `mapstructure:"qiniu-oss"`
+	*LocalConfig     `mapstructure:"local"`
 	*LogConfig       `mapstructure:"log"`
 	*EsConfig        `mapstructure:"es"`
 	*JaegerConfig    `mapstructure:"jaeger"`
 	*RabbitMqConfig  `mapstructure:"rabbitmq"`
 	*MySQLConfig     `mapstructure:"mysql"`
 	*RedisConfig     `mapstructure:"redis"`
+}
+
+type LocalConfig struct {
+	Host string `mapstructure:"host"`
+	Path string `mapstructure:"path"`
 }
 
 type QiNiuOssConfig struct {
@@ -44,7 +50,6 @@ type QiNiuOssConfig struct {
 	ImgPath       string `mapstructure:"img-path"`
 	UseHttps      bool   `mapstructure:"use-https"`
 	UseCdnDomains bool   `mapstructure:"use-cdn-domains"` //
-
 }
 
 type IPhoneMsgConfig struct {

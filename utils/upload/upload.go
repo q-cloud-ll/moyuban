@@ -21,6 +21,7 @@ var (
 		auth:   nil,
 		domain: "",
 	}
+	local = &localUpload{}
 )
 
 func PutImage(data []byte, contentType string) (string, error) {
@@ -33,7 +34,7 @@ func PutObject(key string, data []byte, contentType string) (string, error) {
 
 func CopyImage(url string) (string, error) {
 	u1 := urls.ParseUrl(url).GetURL()
-	u2 := urls.ParseUrl(setting.Conf.Host).GetURL()
+	u2 := urls.ParseUrl(setting.Conf.LocalConfig.Host).GetURL()
 	// 本站host，不下载
 	if u1.Host == u2.Host {
 		return url, nil
@@ -44,10 +45,9 @@ func CopyImage(url string) (string, error) {
 func getUploader() uploader {
 	if IsEnabledOss() {
 		return qiniu
-	} else {
-		//return local
 	}
-	return nil
+
+	return local
 }
 
 // IsEnabledOss 是否启用七牛云oss

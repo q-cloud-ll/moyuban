@@ -90,3 +90,8 @@ qiniu-oss:
   secret-key: SiAXOWJy2oUjNWxHxKUX12hAVcTM9zooZAfEQPW_
   img-path: rxx2xz5zb.hd-bkt.clouddn.com
   use-cdn-domains: false
+
+# 本地文件上传
+local:
+  host:
+  path:

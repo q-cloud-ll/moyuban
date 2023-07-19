@@ -3,9 +3,15 @@ package cache
 import (
 	"context"
 	"github.com/go-redis/redis/v8"
+	"go.uber.org/zap"
+	"gorm.io/gorm"
 	"math"
 	"project/consts"
+	"project/repository/db/model"
 	"project/types"
+	"project/utils"
+	"project/utils/snowflake"
+	"strconv"
 	"time"
 )
 
@@ -16,6 +22,7 @@ type (
 	// and implement the added methods in customStarCache.
 	StarCache interface {
 		StarPost(ctx context.Context, uid, pid string, dir float64) error
+		UpdateStarDetailFromRedisToMySQL(ctx context.Context, db *gorm.DB) (err error)
 	}
 	customStarCache struct {
 		*redis.Client
@@ -27,6 +34,14 @@ func NewStarCache() StarCache {
 		Client: RedisClient,
 	}
 }
+
+/**
+redis点赞逻辑key:
+set: getRedisKey(KeyPostLikedSetPF) 存放所有被点赞帖子集合
+set: getRedisKey(pid) 存放某个帖子下的所有点赞用户
+hash: getStarRedisKey(pid, uid) 记录用户行为的hash，刷表以后可以分析用户行为
+hash: getRedisKey(KeyPostLikedCounterHSetPF) 维护一个帖子的点赞计数器
+*/
 
 func (c *customStarCache) StarPost(ctx context.Context, uid, pid string, value float64) error {
 	//TODO implement me
@@ -98,3 +113,59 @@ func (c *customStarCache) StarPost(ctx context.Context, uid, pid string, value f
 	_, err = pipeline.Exec(ctx)
 	return err
 }
+
+func (c *customStarCache) UpdateStarDetailFromRedisToMySQL(ctx context.Context, db *gorm.DB) (err error) {
+	if db == nil {
+		return consts.DBErrNotFound
+	}
+	zap.L().Info("UpdateStarDetailFromRedisToMySQL 定时任务执行")
+	var f types.StarPostDetail
+	for c.SCard(ctx, getRedisKey(KeyPostLikedSetPF)).Val() != 0 {
+		postId := c.SPop(ctx, getRedisKey(KeyPostLikedSetPF)).Val()
+		for c.SCard(ctx, getRedisKey(postId)).Val() != 0 {
+			userId := c.SPop(ctx, getRedisKey(postId)).Val()
+			err = c.HMGet(ctx, getStarRedisKey(postId, userId),
+				"user_id", "post_id", "status", "create_at", "update_at").Scan(&f)
+			if err != nil {
+				zap.L().Error("UpdateStarDetailFromRedisToMySQL data failed", zap.Error(err))
+				continue
+			}
+			status, _ := strconv.Atoi(f.Status)
+			spd := &types.UserStarDetail{
+				StarId:      snowflake.GenID(),
+				LikedPostId: f.PostId,
+				LikedUserId: f.UserId,
+				Status:      int8(status),
+				CreatedAt:   utils.TimeStringToGoTime(f.CreatedAt, utils.TimeTemplates),
+				UpdatedAt:   utils.TimeStringToGoTime(f.UpdatedAt, utils.TimeTemplates),
+			}
+
+			var out model.UserStar
+			resultFindUserIsStarPost := db.Model(&model.UserStar{}).Select("star_id").
+				Where("liked_post_id = ? and liked_user_id = ?", postId, userId).Find(&out)
+			if resultFindUserIsStarPost.RowsAffected < 1 {
+				db.Model(&model.UserStar{}).Create(spd)
+			} else {
+				db.Model(&model.UserStar{}).
+					Where("liked_post_id = ? and liked_user_id = ?", postId, userId).
+					Updates(types.UserStarDetail{Status: int8(status),
+						UpdatedAt: utils.TimeStringToGoTime(f.UpdatedAt, utils.TimeTemplates)})
+			}
+
+			c.Del(ctx, getStarRedisKey(postId, userId))
+			var likeNum int64
+			// 将点赞数量更新进mysql
+			db.Model(&model.Post{}).Select("like_num").
+				Where("post_id = ?", postId).Find(&likeNum)
+			newLikeNum, _ := strconv.ParseInt(c.HGet(ctx, getRedisKey(KeyPostLikedCounterHSetPF), postId).Val(), 10, 64)
+			if postId != "" {
+				db.Model(&model.Post{}).Where("post_id = ?", postId).
+					Update("like_num = ?", newLikeNum+likeNum)
+			}
+			c.HSet(ctx, getRedisKey(KeyPostLikedCounterHSetPF), postId, 0)
+		}
+	}
+	return
+}
+
+// 点赞影响post排名，做成推荐文章，但是推荐文章只给200篇，如果后续还有需要，从数据库中

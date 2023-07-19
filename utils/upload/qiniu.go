@@ -45,6 +45,7 @@ func (q *qiniuOssUpload) PutObject(key string, data []byte, contentType string) 
 	if err := formUploader.Put(context.Background(), &ret, upToken, key, bytes.NewReader(data), int64(len(data)), extra); err != nil {
 		return "", err
 	}
+
 	return q.domain + "/" + key, nil
 }
 

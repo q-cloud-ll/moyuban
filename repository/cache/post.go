@@ -15,6 +15,7 @@ type (
 		CreatePost(ctx context.Context, pid, cid string) error
 		GetPostIdsOrder(ctx context.Context, p *types.PostListReq) ([]string, error)
 		GetCommunityPostsIdsInorder(ctx context.Context, p *types.PostListReq) ([]string, error)
+		GetIdsFormKey(ctx context.Context, key string, page, size int64) ([]string, error)
 	}
 	customPostCache struct {
 		*redis.Client

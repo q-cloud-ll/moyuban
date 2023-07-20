@@ -56,6 +56,11 @@ func SetupRouter() *gin.Engine {
 		v1.POST("post/post", api.CreatePostHandler)
 	}
 	{
+		v1.POST("comment/comment", api.CreateCommentHandler)
+		v1.GET("comment/commentList", api.GetPostCommentListHandler)
+		v1.GET("comment/sonCommentList", api.GetChildrenCommentListHandler)
+	}
+	{
 		v1.POST("star/starPost", api.StarPostHandler)
 	}
 	{

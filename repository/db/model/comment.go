@@ -9,6 +9,6 @@ type Comment struct {
 	PostId    int64  `json:"post_id" gorm:"index;not null;comment:帖子id"`
 	ReplyId   int64  `json:"reply_id" gorm:"index;not null"`
 	Pid       int64  `json:"pid" gorm:"index;not null;comment:父id"`
-	UserId    string `json:"user_id" gorm:"index;not null;comment:用户id"`
+	UserId    int64  `json:"user_id" gorm:"index;not null;comment:用户id"`
 	Content   string `json:"content" gorm:"not null"`
 }

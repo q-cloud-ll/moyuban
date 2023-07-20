@@ -36,3 +36,9 @@ type UserTokenData struct {
 	AccessToken  string      `json:"access_token"`
 	RefreshToken string      `json:"refresh_token"`
 }
+
+type UserCommentInfo struct {
+	UserId   int64  `json:"user_id"`
+	NickName string `json:"nick_name"`
+	Avatar   string `json:"avatar"`
+}

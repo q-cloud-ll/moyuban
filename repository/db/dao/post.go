@@ -2,9 +2,10 @@ package dao
 
 import (
 	"context"
+	"project/repository/db/model"
+
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"project/repository/db/model"
 )
 
 var _ PostModel = (*customPostModel)(nil)
@@ -17,6 +18,7 @@ type (
 		CreatePost(ctx context.Context, p *model.Post) error
 		GetPostListByIds(ctx context.Context, ids []string) (resp interface{}, err error)
 		GetPostDetailById(ctx context.Context, pid string) (resp interface{}, err error)
+		IncrViewCount(ctx context.Context, pid string) error
 	}
 
 	customPostModel struct {
@@ -29,6 +31,12 @@ func NewPostModel() PostModel {
 	return &customPostModel{
 		DB: NewDBClient(),
 	}
+}
+
+func (m *customPostModel) IncrViewCount(ctx context.Context, pid string) error {
+	//TODO implement me
+	err := m.WithContext(ctx).Model(&model.Post{}).Update("view_count", gorm.Expr("view_count + ?", 1)).Where("pid = ?", pid).Error
+	return err
 }
 
 // GetPostDetailById 查看帖子详情

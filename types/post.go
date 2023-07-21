@@ -1,11 +1,19 @@
 package types
 
-import "project/repository/db/model"
+import (
+	"project/repository/db/model"
+	"time"
+)
 
 type PostReq struct {
-	CommunityId string `json:"community_id" validate:"required"`
-	Title       string `json:"title"`
-	Content     string `json:"content" validate:"required,max=1000"`
+	CommunityId string    `json:"community_id" validate:"required"`
+	Title       string    `json:"title" validate:"required,max=20"`
+	Content     string    `json:"content" validate:"required,max=1000"`
+	ContentType string    `json:"content_type"`
+	Summary     string    `json:"summary"`
+	SourceUrl   string    `json:"source_url"`
+	Cover       *ImageDTO `json:"cover"`
+	Tags        []string  `json:"tags"`
 }
 
 type PostListReq struct {
@@ -29,4 +37,38 @@ type PostContentDetailResp struct {
 	*model.Post      `json:"post"`
 	*model.User      `json:"user"`
 	*model.Community `json:"community"`
+}
+
+type PostSimpleRes struct {
+	PostId     int64            `json:"post_id"`
+	User       *model.User      `json:"user"`
+	Community  *model.Community `json:"community"`
+	Tags       *[]TagResp       `json:"tags"`
+	Title      string           `json:"title"`
+	Summary    string           `json:"summary"`
+	Cover      *ImageInfo       `json:"cover"`
+	SourceUrl  string           `json:"source_url"`
+	ViewCount  int64            `json:"view_count"`
+	LikeCount  int64            `json:"like_count"`
+	CreateTime time.Time        `json:"create_time"`
+	Status     int              `json:"status"`
+}
+
+type PostResp struct {
+	PostSimpleRes
+	Content string `json:"content"`
+}
+
+type TagResp struct {
+	TagId   int64  `json:"tagId"`
+	TagName string `json:"tagName"`
+}
+
+type ImageInfo struct {
+	Url     string `json:"url"`
+	Preview string `json:"preview"`
+}
+
+type ImageDTO struct {
+	Url string `json:"url"`
 }

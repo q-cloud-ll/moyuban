@@ -1,13 +1,14 @@
 package v1
 
 import (
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"io/ioutil"
 	"project/consts"
 	"project/utils/app"
 	"project/utils/upload"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func UploadFileHandler(c *gin.Context) {
@@ -17,7 +18,7 @@ func UploadFileHandler(c *gin.Context) {
 
 	if err != nil {
 		zap.L().Error("formfile failed", zap.Error(err))
-		app.ResponseErrorWithMsg(c, err)
+		app.ResponseErrorWithMsg(c, err.Error())
 		return
 	}
 
@@ -33,17 +34,17 @@ func UploadFileHandler(c *gin.Context) {
 
 	if err != nil {
 		zap.L().Error("ReadAll failed", zap.Error(err))
-		app.ResponseErrorWithMsg(c, err)
+		app.ResponseErrorWithMsg(c, err.Error())
 		return
 	}
 	zap.L().Info("上传文件：", zap.String("filename: ", header.Filename), zap.Int64("size:", header.Size))
 	if err != nil {
-		app.ResponseErrorWithMsg(c, err)
+		app.ResponseErrorWithMsg(c, err.Error())
 		return
 	}
 	url, err := upload.PutImage(fileBytes, contentType)
 	if err != nil {
-		app.ResponseErrorWithMsg(c, err)
+		app.ResponseErrorWithMsg(c, err.Error())
 		return
 	}
 

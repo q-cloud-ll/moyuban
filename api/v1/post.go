@@ -1,14 +1,15 @@
 package v1
 
 import (
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"project/consts"
 	"project/service"
 	"project/service/svc"
 	"project/types"
 	"project/utils"
 	"project/utils/app"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 // CreatePostHandler 新建帖子
@@ -26,15 +27,15 @@ func CreatePostHandler(c *gin.Context) {
 		app.ResponseErrorWithMsg(c, msg)
 		return
 	}
-	u, _ := app.GetUserInfo(c)
 	ps := service.NewPostService(c.Request.Context(), svc.NewPostServiceContext())
-	if err := ps.CreatePostSrv(u.UID, &req); err != nil {
-		zap.L().Error("CreatePostSrv failed,err:", zap.Error(err))
-		app.ResponseErrorWithMsg(c, err.Error())
+	resp, errs := ps.CreatePostSrv(&req)
+	if errs != nil {
+		zap.L().Error("CreatePostSrv failed,err:", zap.Error(errs))
+		app.ResponseErrorWithMsg(c, errs.Error())
 		return
 	}
 
-	app.ResponseSuccess(c, app.CodeSuccess)
+	app.ResponseSuccess(c, resp)
 }
 
 // GetPostListHandler 获取帖子列表接口

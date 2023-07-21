@@ -2,9 +2,6 @@ package cache
 
 import (
 	"context"
-	"github.com/go-redis/redis/v8"
-	"go.uber.org/zap"
-	"gorm.io/gorm"
 	"math"
 	"project/consts"
 	"project/repository/db/model"
@@ -13,6 +10,10 @@ import (
 	"project/utils/snowflake"
 	"strconv"
 	"time"
+
+	"github.com/go-redis/redis/v8"
+	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 var _ StarCache = (*customStarCache)(nil)
@@ -165,6 +166,8 @@ func (c *customStarCache) UpdateStarDetailFromRedisToMySQL(ctx context.Context, 
 			c.HSet(ctx, getRedisKey(KeyPostLikedCounterHSetPF), postId, 0)
 		}
 	}
+
+	zap.L().Info("UpdateStarDetailFromRedisToMySQL 定时任务执行完毕")
 	return
 }
 

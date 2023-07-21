@@ -2,14 +2,20 @@ package service
 
 import (
 	"context"
-	"go.uber.org/zap"
+	"project/api/render"
 	"project/consts"
 	"project/logger"
 	"project/repository/db/model"
 	"project/service/svc"
 	"project/types"
+	"project/utils/app"
 	"project/utils/snowflake"
 	"strconv"
+	"strings"
+
+	"github.com/mlogclub/simple/common/jsons"
+
+	"go.uber.org/zap"
 )
 
 type PostSrv struct {
@@ -27,29 +33,38 @@ func NewPostService(ctx context.Context, svcCtx *svc.PostServiceContext) *PostSr
 }
 
 // CreatePostSrv 创建帖子服务
-func (l *PostSrv) CreatePostSrv(uid int64, req *types.PostReq) (err error) {
+func (l *PostSrv) CreatePostSrv(req *types.PostReq) (resp interface{}, err error) {
+	u, _ := app.GetUserInfo(l.ctx)
+	req.Title = strings.TrimSpace(req.Title)
+	req.Summary = strings.TrimSpace(req.Summary)
+	req.Content = strings.TrimSpace(req.Content)
 	cid, _ := strconv.ParseInt(req.CommunityId, 10, 64)
 	pid := snowflake.GenID()
 	post := &model.Post{
-		AuthorId:    uid,
+		AuthorId:    u.UID,
 		PostId:      pid,
 		CommunityId: cid,
 		Title:       req.Title,
 		Content:     req.Content,
+		ContentType: req.ContentType,
+		Summary:     req.Summary,
+		SourceUrl:   req.SourceUrl,
 	}
-
+	if req.Cover != nil {
+		post.Cover = jsons.ToJsonStr(req.Cover)
+	}
 	isExist, err := l.svcCtx.PostModel.JudgeCommunityIsExist(l.ctx, req.CommunityId)
 	if isExist {
-		return consts.CommunityNotExistErr
+		return nil, consts.CommunityNotExistErr
 	}
-
+	user, _ := l.svcCtx.UserSvc.UserModel.GetUserInfo(l.ctx, u.UID)
 	err = l.svcCtx.PostModel.CreatePost(l.ctx, post)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	err = l.svcCtx.PostCache.CreatePost(l.ctx, strconv.FormatInt(pid, 10), req.CommunityId)
 
-	return
+	return render.BuildPost(post, user, nil), err
 }
 
 // GetPostListSrv 获取帖子列表
@@ -156,12 +171,17 @@ func (l *PostSrv) GetCommunityPostList(req *types.PostListReq) (resp interface{}
 
 func (l *PostSrv) PostDetailSrv(pid string) (resp interface{}, err error) {
 	post, err := l.svcCtx.PostModel.GetPostDetailById(l.ctx, pid)
+	if post == nil || post.(*model.Post).Status == consts.StatusDeleted {
+		return nil, consts.PostNoFoundErr
+	}
 	if err != nil {
 		zap.L().Error("GetPostDetailById(pid) failed",
 			zap.String("pid", pid),
 			zap.Error(err))
 		return
 	}
+
+	_ = l.svcCtx.PostModel.IncrViewCount(l.ctx, pid)
 
 	user, err := l.svcCtx.UserSvc.UserModel.GetUserInfo(l.ctx, post.(*model.Post).AuthorId)
 	if err != nil {
@@ -179,11 +199,7 @@ func (l *PostSrv) PostDetailSrv(pid string) (resp interface{}, err error) {
 		return
 	}
 
-	resp = &types.PostContentDetailResp{
-		Post:      post.(*model.Post),
-		User:      user,
-		Community: community,
-	}
+	resp = render.BuildPost(post.(*model.Post), user, community)
 
 	return
 }

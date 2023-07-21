@@ -19,6 +19,8 @@ var Conf = new(AppConfig)
 type AppConfig struct {
 	Name             string `mapstructure:"name"`
 	Mode             string `mapstructure:"mode"`
+	Host             string `mapstructure:"host"`
+	UrlRedirect      bool   `mapstructure:"url_redirect"`
 	Version          string `mapstructure:"version"`
 	DbType           string `mapstructure:"db-type"`
 	Port             int    `mapstructure:"port"`
@@ -48,6 +50,11 @@ type QiNiuOssConfig struct {
 	AccessKey     string `mapstructure:"access-key"`
 	SecretKey     string `mapstructure:"secret-key"`
 	ImgPath       string `mapstructure:"img-path"`
+	StylePreview  string `mapstructure:"style-preview"`
+	StyleSmall    string `mapstructure:"style-small"`
+	StyleDetail   string `mapstructure:"style-detail"`
+	StyleAvatar   string `mapstructure:"style-avatar"`
+	StyleSplitter string `mapstructure:"style-splitter"`
 	UseHttps      bool   `mapstructure:"use-https"`
 	UseCdnDomains bool   `mapstructure:"use-cdn-domains"` //
 }

@@ -1,5 +1,7 @@
 name: "go_builder"
 mode: "dev"
+host: 124.221.205.130
+url_redirect: true
 port: 8888
 db-type: "mysql"
 version: "v0.0.1"
@@ -90,6 +92,11 @@ qiniu-oss:
   secret-key: SiAXOWJy2oUjNWxHxKUX12hAVcTM9zooZAfEQPW_
   img-path: rxx2xz5zb.hd-bkt.clouddn.com
   use-cdn-domains: false
+  style-detail: detail
+  style-preview: preview
+  style-avatar: avatar
+  style-small: small
+  style-splitter: "!"
 
 # 本地文件上传
 local:

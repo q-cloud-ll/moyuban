@@ -50,7 +50,6 @@ func (m *customUserModel) GetUserInfo(ctx context.Context, uid int64) (user *mod
 	//TODO implement me
 	err = m.DB.WithContext(ctx).
 		Model(&model.User{}).
-		Select("user_id, nickname, user_name, avatar").
 		Where("user_id = ?", uid).
 		Find(&user).
 		Error

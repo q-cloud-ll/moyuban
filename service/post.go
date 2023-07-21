@@ -95,7 +95,7 @@ func (l *PostSrv) GetAllPostListSrv(req *types.PostListReq) (resp interface{}, t
 	}
 
 	var data []*types.PostDetailResp
-	for _, post := range posts.([]*model.Post) {
+	for _, post := range posts {
 		user, err := l.svcCtx.UserSvc.UserModel.GetUserInfo(l.ctx, post.AuthorId)
 		if err != nil {
 			zap.L().Error("GetUserInfo(l.ctx, post.AuthorId) failed",
@@ -141,7 +141,7 @@ func (l *PostSrv) GetCommunityPostList(req *types.PostListReq) (resp interface{}
 
 	//voteData, err := FrmGetPostVoteData(ids)
 	var data []*types.PostDetailResp
-	for _, post := range posts.([]*model.Post) {
+	for _, post := range posts {
 		user, err := l.svcCtx.UserSvc.UserModel.GetUserInfo(l.ctx, post.AuthorId)
 		if err != nil {
 			zap.L().Error("GetUserInfo(l.ctx, post.AuthorId) failed",
@@ -170,8 +170,9 @@ func (l *PostSrv) GetCommunityPostList(req *types.PostListReq) (resp interface{}
 }
 
 func (l *PostSrv) PostDetailSrv(pid string) (resp interface{}, err error) {
+	_ = l.svcCtx.PostModel.IncrViewCount(l.ctx, pid)
 	post, err := l.svcCtx.PostModel.GetPostDetailById(l.ctx, pid)
-	if post == nil || post.(*model.Post).Status == consts.StatusDeleted {
+	if post == nil || post.Status == consts.StatusDeleted {
 		return nil, consts.PostNoFoundErr
 	}
 	if err != nil {
@@ -181,25 +182,23 @@ func (l *PostSrv) PostDetailSrv(pid string) (resp interface{}, err error) {
 		return
 	}
 
-	_ = l.svcCtx.PostModel.IncrViewCount(l.ctx, pid)
-
-	user, err := l.svcCtx.UserSvc.UserModel.GetUserInfo(l.ctx, post.(*model.Post).AuthorId)
+	user, err := l.svcCtx.UserSvc.UserModel.GetUserInfo(l.ctx, post.AuthorId)
 	if err != nil {
 		zap.L().Error("GetUserInfo(post.(*model.Post).AuthorId) failed",
-			zap.String("post.(*model.Post).AuthorId", strconv.FormatInt(post.(*model.Post).AuthorId, 10)),
+			zap.String("post.(*model.Post).AuthorId", strconv.FormatInt(post.AuthorId, 10)),
 			zap.Error(err))
 		return
 	}
 
-	community, err := l.svcCtx.CommunityModel.GetCommunityDetailById(l.ctx, post.(*model.Post).CommunityId)
+	community, err := l.svcCtx.CommunityModel.GetCommunityDetailById(l.ctx, post.CommunityId)
 	if err != nil {
 		zap.L().Error("GetCommunityDetailById(l.ctx,post.(*model.Post).CommunityId) failed",
-			zap.String("post.(*model.Post).CommunityId", strconv.FormatInt(post.(*model.Post).CommunityId, 10)),
+			zap.String("post.(*model.Post).CommunityId", strconv.FormatInt(post.CommunityId, 10)),
 			zap.Error(err))
 		return
 	}
 
-	resp = render.BuildPost(post.(*model.Post), user, community)
+	resp = render.BuildPost(post, user, community)
 
 	return
 }

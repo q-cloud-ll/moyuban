@@ -4,7 +4,7 @@ host: 124.221.205.130
 url_redirect: true
 port: 8888
 db-type: "mysql"
-version: "v0.0.1"
+version: "v1.0.1"
 
 # jwt configuration
 jwt:
@@ -92,11 +92,11 @@ qiniu-oss:
   secret-key: SiAXOWJy2oUjNWxHxKUX12hAVcTM9zooZAfEQPW_
   img-path: rxx2xz5zb.hd-bkt.clouddn.com
   use-cdn-domains: false
-  style-detail: detail
-  style-preview: preview
+  style-detail: imageView2
+  style-preview: imageView2/2/h/200
   style-avatar: avatar
   style-small: small
-  style-splitter: "!"
+  style-splitter: "?"
 
 # 本地文件上传
 local:

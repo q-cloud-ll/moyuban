@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"project/repository/db/model"
+	"project/types"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -19,6 +20,7 @@ type (
 		GetPostListByIds(ctx context.Context, ids []string) (list []*model.Post, err error)
 		GetPostDetailById(ctx context.Context, pid string) (post *model.Post, err error)
 		IncrViewCount(ctx context.Context, pid string) error
+		UpdatePostEdit(ctx context.Context, p *types.EditPostReq) error
 	}
 
 	customPostModel struct {
@@ -33,10 +35,19 @@ func NewPostModel() PostModel {
 	}
 }
 
+func (m *customPostModel) UpdatePostEdit(ctx context.Context, p *types.EditPostReq) error {
+	//TODO implement me
+	return m.WithContext(ctx).Model(&model.Post{}).
+		Where("post_id = ?", p.PostId).
+		Updates(&p).Error
+}
+
 func (m *customPostModel) IncrViewCount(ctx context.Context, pid string) error {
 	//TODO implement me
-	err := m.WithContext(ctx).Model(&model.Post{}).Where("post_id = ?", pid).UpdateColumn("view_count", gorm.Expr("view_count + ?", 1)).Error
-	return err
+	return m.WithContext(ctx).Model(&model.Post{}).
+		Where("post_id = ?", pid).
+		UpdateColumn("view_count", gorm.Expr("view_count + ?", 1)).
+		Error
 }
 
 // GetPostDetailById 查看帖子详情

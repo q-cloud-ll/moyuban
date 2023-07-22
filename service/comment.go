@@ -2,13 +2,15 @@ package service
 
 import (
 	"context"
-	"go.uber.org/zap"
 	"project/consts"
 	"project/logger"
 	"project/repository/db/model"
 	"project/service/svc"
 	"project/types"
+	"project/utils/sensitiveWord"
 	"project/utils/snowflake"
+
+	"go.uber.org/zap"
 )
 
 type CommentSrv struct {
@@ -26,6 +28,9 @@ func NewCommentService(ctx context.Context, svcCtx *svc.CommentServiceContext) *
 }
 
 func (l *CommentSrv) CreateCommentSrv(req *types.PostCommentReq, uid int64) (err error) {
+	if sensitiveWord.CheckSensitiveWord(req.Content) != nil {
+		return consts.HasSensitiveWordsErr
+	}
 	comment := &model.Comment{
 		CommentId: snowflake.GenID(),
 		Pid:       req.Pid,

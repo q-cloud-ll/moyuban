@@ -54,7 +54,9 @@ func SetupRouter() *gin.Engine {
 	v1.Use(middlewares.JWTAuth())
 	{
 		v1.POST("post/post", api.CreatePostHandler)
+		v1.PUT("post/editPost", api.UpdatePostEditHandler)
 		v1.GET("post/editPostDetail", api.GetEditPostDetailHandler)
+
 	}
 	{
 		v1.POST("comment/comment", api.CreateCommentHandler)

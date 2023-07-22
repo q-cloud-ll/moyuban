@@ -40,7 +40,7 @@ func UserLoginHandler(c *gin.Context) {
 	var req types.UserLoginReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		zap.L().Error("UserLoginHandler param with invalid", zap.Error(err))
-		app.ResponseErrorWithMsg(c, app.CodeInvalidParam)
+		app.ResponseError(c, app.CodeInvalidParam)
 		return
 	}
 
@@ -59,7 +59,7 @@ func UserSendMsgHandler(c *gin.Context) {
 	var req types.UserSendMsgReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		zap.L().Error("UserSendMsgHandler param with invalid", zap.Error(err))
-		app.ResponseErrorWithMsg(c, app.CodeInvalidParam)
+		app.ResponseError(c, app.CodeInvalidParam)
 		return
 	}
 	msg, code := utils.Validate(c, &req)
@@ -80,7 +80,7 @@ func UserPhoneLoginHandler(c *gin.Context) {
 	var req types.UserPhoneLoginReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		zap.L().Error("UserPhoneLoginHandler param with invalid", zap.Error(err))
-		app.ResponseErrorWithMsg(c, app.CodeInvalidParam)
+		app.ResponseError(c, app.CodeInvalidParam)
 		return
 	}
 	msg, code := utils.Validate(c, &req)

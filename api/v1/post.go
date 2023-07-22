@@ -90,6 +90,7 @@ func PostDetailHandler(c *gin.Context) {
 	app.ResponseSuccess(c, data)
 }
 
+// GetEditPostDetailHandler 编辑帖子获取详情
 func GetEditPostDetailHandler(c *gin.Context) {
 	var req types.EditPostDetailReq
 	if err := c.ShouldBindQuery(&req); err != nil {
@@ -99,5 +100,31 @@ func GetEditPostDetailHandler(c *gin.Context) {
 	}
 
 	ps := service.NewPostService(c.Request.Context(), svc.NewPostServiceContext())
-	ps.GetEditPostDetail(req.PostId)
+	resp, err := ps.GetEditPostDetail(req.PostId)
+	if err != nil {
+		zap.L().Error("GetEditPostDetail failed,err:", zap.Error(err))
+		app.ResponseErrorWithMsg(c, err.Error())
+		return
+	}
+
+	app.ResponseSuccess(c, resp)
+
+}
+
+func UpdatePostEditHandler(c *gin.Context) {
+	var req types.EditPostReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		zap.L().Error("GetEditPostDetailHandler query with invalid", zap.Error(err))
+		app.ResponseError(c, app.CodeInvalidParam)
+		return
+	}
+
+	err := service.NewPostService(c.Request.Context(), svc.NewPostServiceContext()).UpdatePostEdit(&req)
+	if err != nil {
+		zap.L().Error("UpdatePostEdit failed,err:", zap.Error(err))
+		app.ResponseErrorWithMsg(c, err.Error())
+		return
+	}
+
+	app.ResponseSuccess(c, nil)
 }

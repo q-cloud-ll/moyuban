@@ -22,7 +22,7 @@ type Target struct {
 
 var s *SensitiveMap
 
-func CheckSensitiveWord(content string) ([]*types.SensitiveWord, error) {
+func CheckSensitiveWord(content string) []*types.SensitiveWord {
 	var res []*types.SensitiveWord
 	sensitiveMap := getMap()
 	target := sensitiveMap.FindAllSensitive(content)
@@ -35,7 +35,7 @@ func CheckSensitiveWord(content string) ([]*types.SensitiveWord, error) {
 		res = append(res, t)
 	}
 
-	return res, nil
+	return res
 }
 
 // FindAllSensitive 查找所有的敏感词

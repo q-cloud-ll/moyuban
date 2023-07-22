@@ -9,9 +9,12 @@ import (
 	"project/service/svc"
 	"project/types"
 	"project/utils/app"
+	"project/utils/sensitiveWord"
 	"project/utils/snowflake"
 	"strconv"
 	"strings"
+
+	"github.com/mlogclub/simple/common/strs"
 
 	"github.com/mlogclub/simple/common/jsons"
 
@@ -34,6 +37,9 @@ func NewPostService(ctx context.Context, svcCtx *svc.PostServiceContext) *PostSr
 
 // CreatePostSrv 创建帖子服务
 func (l *PostSrv) CreatePostSrv(req *types.PostReq) (resp interface{}, err error) {
+	if sensitiveWord.CheckSensitiveWord(req.Title) != nil || sensitiveWord.CheckSensitiveWord(req.Content) != nil {
+		return nil, consts.HasSensitiveWordsErr
+	}
 	u, _ := app.GetUserInfo(l.ctx)
 	req.Title = strings.TrimSpace(req.Title)
 	req.Summary = strings.TrimSpace(req.Summary)
@@ -50,7 +56,7 @@ func (l *PostSrv) CreatePostSrv(req *types.PostReq) (resp interface{}, err error
 		Summary:     req.Summary,
 		SourceUrl:   req.SourceUrl,
 	}
-	if req.Cover != nil {
+	if req.Cover != "" {
 		post.Cover = jsons.ToJsonStr(req.Cover)
 	}
 	isExist, err := l.svcCtx.PostModel.JudgeCommunityIsExist(l.ctx, req.CommunityId)
@@ -211,13 +217,37 @@ func (l *PostSrv) GetEditPostDetail(pid string) (resp interface{}, err error) {
 		return nil, consts.PostNoFoundErr
 	}
 
-	return
+	var cover *types.ImageDTO
+	if err := jsons.Parse(post.Cover, &cover); err != nil {
+		zap.L().Error("jsons.Parse(post.Cover, &cover) failed:", zap.Error(err))
+	}
 
+	resp = &types.EditPostDetailResp{
+		PostId:  pid,
+		Title:   post.Title,
+		Content: post.Content,
+		Cover:   cover,
+	}
+
+	return
 }
 
-//func (l *PostSrv) GetPostVoteData(ids []string) (data []int64, err error) {
-//	data = make([]int64, 0, len(ids))
-//	for _, id := range ids {
-//		v, _ :=
-//	}
-//}
+func (l *PostSrv) UpdatePostEdit(req *types.EditPostReq) (err error) {
+	if sensitiveWord.CheckSensitiveWord(req.Content) != nil || sensitiveWord.CheckSensitiveWord(req.Title) != nil {
+		return consts.HasSensitiveWordsErr
+	}
+	if strs.IsBlank(req.Title) || strs.IsBlank(req.Content) {
+		return consts.PostTitleOrContentNoFoundErr
+	}
+	post, err := l.svcCtx.PostModel.GetPostDetailById(l.ctx, req.PostId)
+	if post == nil || post.Status == consts.StatusDeleted {
+		return consts.PostNoFoundErr
+	}
+
+	err = l.svcCtx.PostModel.UpdatePostEdit(l.ctx, req)
+	if err != nil {
+		return err
+	}
+
+	return
+}

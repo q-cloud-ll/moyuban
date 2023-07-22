@@ -2,8 +2,9 @@ package server
 
 import (
 	"fmt"
-	"go.uber.org/zap"
 	"project/setting"
+
+	"go.uber.org/zap"
 
 	"github.com/gin-gonic/gin"
 
@@ -15,9 +16,6 @@ type server interface {
 }
 
 func RunWindowServer(router *gin.Engine) {
-	//if err := utils.InitTrans("zh"); err != nil {
-	//	panic(fmt.Errorf("failed to initialize translator: %v", err))
-	//}
 	address := fmt.Sprintf(":%d", setting.Conf.Port)
 	s := initServer(address, router)
 	// 保证文本顺序输出
@@ -27,9 +25,9 @@ func RunWindowServer(router *gin.Engine) {
 	csdn := "https://blog.csdn.net/weixin_51991615"
 	fmt.Printf(`
 	欢迎使用 go_builder
-	当前版本:v0.0.1
-	简介：主要为了快速搭建小型项目的脚手架
+	当前版本:%s
+	简介：基于Gin框架的golang脚手架，内置基本结构，可快速搭建项目
 	Up主博客地址：%s
-`, csdn)
+`, setting.Conf.Version, csdn)
 	zap.L().Error(s.ListenAndServe().Error())
 }

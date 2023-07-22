@@ -6,14 +6,14 @@ import (
 )
 
 type PostReq struct {
-	CommunityId string    `json:"community_id" validate:"required"`
-	Title       string    `json:"title" validate:"required,max=20"`
-	Content     string    `json:"content" validate:"required,max=1000"`
-	ContentType string    `json:"content_type"`
-	Summary     string    `json:"summary"`
-	SourceUrl   string    `json:"source_url"`
-	Cover       *ImageDTO `json:"cover"`
-	Tags        []string  `json:"tags"`
+	CommunityId string   `json:"community_id" validate:"required"`
+	Title       string   `json:"title" validate:"required,max=20"`
+	Content     string   `json:"content" validate:"required,max=1000"`
+	ContentType string   `json:"content_type"`
+	Summary     string   `json:"summary"`
+	SourceUrl   string   `json:"source_url"`
+	Cover       string   `json:"cover"`
+	Tags        []string `json:"tags"`
 }
 
 type PostListReq struct {
@@ -52,7 +52,7 @@ type PostResp struct {
 }
 
 type TagResp struct {
-	TagId   int64  `json:"tagId"`
+	TagId   int64  `json:"tag_id"`
 	TagName string `json:"tagName"`
 }
 
@@ -65,15 +65,24 @@ type ImageDTO struct {
 	Url string `json:"url"`
 }
 
+// EditPostDetailReq 获取帖子编辑详情
 type EditPostDetailReq struct {
 	PostId string `form:"post_id" json:"post_id"`
 }
 
 type EditPostDetailResp struct {
-	PostId  string   `json:"postId"`
+	PostId  string    `json:"post_id"`
+	Title   string    `json:"title"`
+	Content string    `json:"content"`
+	Cover   *ImageDTO `json:"cover"`
+	Tags    []string  `json:"tags"`
+}
+
+type EditPostReq struct {
+	PostId  string   `json:"post_id"`
 	Title   string   `json:"title"`
 	Content string   `json:"content"`
-	cover   string   `json:"cover"`
+	Cover   string   `json:"cover"`
 	Tags    []string `json:"tags"`
 }
 

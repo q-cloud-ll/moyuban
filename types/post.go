@@ -31,14 +31,6 @@ type PostDetailResp struct {
 	*model.Community `json:"community"`
 }
 
-// PostContentDetailResp 帖子详情
-type PostContentDetailResp struct {
-	VoteNum          int64 `json:"vote_num"`
-	*model.Post      `json:"post"`
-	*model.User      `json:"user"`
-	*model.Community `json:"community"`
-}
-
 type PostSimpleRes struct {
 	PostId     int64            `json:"post_id"`
 	User       *model.User      `json:"user"`
@@ -71,4 +63,22 @@ type ImageInfo struct {
 
 type ImageDTO struct {
 	Url string `json:"url"`
+}
+
+type EditPostDetailReq struct {
+	PostId string `form:"post_id" json:"post_id"`
+}
+
+type EditPostDetailResp struct {
+	PostId  string   `json:"postId"`
+	Title   string   `json:"title"`
+	Content string   `json:"content"`
+	cover   string   `json:"cover"`
+	Tags    []string `json:"tags"`
+}
+
+type SensitiveWord struct {
+	Word    string `json:"word"`
+	Indexes []int  `json:"indexes"`
+	Length  int    `json:"length"`
 }

@@ -89,3 +89,15 @@ func PostDetailHandler(c *gin.Context) {
 
 	app.ResponseSuccess(c, data)
 }
+
+func GetEditPostDetailHandler(c *gin.Context) {
+	var req types.EditPostDetailReq
+	if err := c.ShouldBindQuery(&req); err != nil {
+		zap.L().Error("GetEditPostDetailHandler query with invalid", zap.Error(err))
+		app.ResponseError(c, app.CodeInvalidParam)
+		return
+	}
+
+	ps := service.NewPostService(c.Request.Context(), svc.NewPostServiceContext())
+	ps.GetEditPostDetail(req.PostId)
+}

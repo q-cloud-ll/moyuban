@@ -165,7 +165,9 @@ func (l *PostSrv) GetCommunityPostList(req *types.PostListReq) (resp interface{}
 		}
 		data = append(data, postDetail)
 	}
+
 	total = int64(len(data))
+	resp = data
 	return
 }
 
@@ -201,6 +203,16 @@ func (l *PostSrv) PostDetailSrv(pid string) (resp interface{}, err error) {
 	resp = render.BuildPost(post, user, community)
 
 	return
+}
+
+func (l *PostSrv) GetEditPostDetail(pid string) (resp interface{}, err error) {
+	post, err := l.svcCtx.PostModel.GetPostDetailById(l.ctx, pid)
+	if post == nil || post.Status == consts.StatusDeleted {
+		return nil, consts.PostNoFoundErr
+	}
+
+	return
+
 }
 
 //func (l *PostSrv) GetPostVoteData(ids []string) (data []int64, err error) {

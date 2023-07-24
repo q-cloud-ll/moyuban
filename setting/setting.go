@@ -17,13 +17,14 @@ import (
 var Conf = new(AppConfig)
 
 type AppConfig struct {
-	Name             string `mapstructure:"name"`
-	Mode             string `mapstructure:"mode"`
-	Host             string `mapstructure:"host"`
-	UrlRedirect      bool   `mapstructure:"url_redirect"`
-	Version          string `mapstructure:"version"`
-	DbType           string `mapstructure:"db-type"`
-	Port             int    `mapstructure:"port"`
+	Name             string                  `mapstructure:"name"`
+	Mode             string                  `mapstructure:"mode"`
+	Host             string                  `mapstructure:"host"`
+	Version          string                  `mapstructure:"version"`
+	DbType           string                  `mapstructure:"db-type"`
+	UrlRedirect      bool                    `mapstructure:"url_redirect"`
+	Port             int                     `mapstructure:"port"`
+	KafKa            map[string]*KafkaConfig `mapstructure:"kafka"`
 	*CORS            `mapstructure:"cors"`
 	*JWT             `mapstructure:"jwt"`
 	*SnowflakeConfig `mapstructure:"snowflake"`
@@ -33,9 +34,20 @@ type AppConfig struct {
 	*LogConfig       `mapstructure:"log"`
 	*EsConfig        `mapstructure:"es"`
 	*JaegerConfig    `mapstructure:"jaeger"`
+	*RedisConfig     `mapstructure:"redis"`
 	*RabbitMqConfig  `mapstructure:"rabbitmq"`
 	*MySQLConfig     `mapstructure:"mysql"`
-	*RedisConfig     `mapstructure:"redis"`
+}
+
+type KafkaConfig struct {
+	DisableConsumer bool   `mapstructure:"disableConsumer"`
+	Debug           bool   `mapstructure:"debug"`
+	Address         string `mapstructure:"address"`
+	ReadTimeout     int64  `mapstructure:"read-timeout"`
+	WriteTimeout    int64  `mapstructure:"write-timeout"`
+	RequiredAck     int    `mapstructure:"required-ack"`
+	MaxOpenRequests int    `mapstructure:"max-open-requests"`
+	Partition       int    `mapstructure:"partition"`
 }
 
 type LocalConfig struct {

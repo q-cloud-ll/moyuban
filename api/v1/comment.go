@@ -1,14 +1,15 @@
 package v1
 
 import (
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"project/consts"
 	"project/service"
 	"project/service/svc"
 	"project/types"
 	"project/utils"
 	"project/utils/app"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func CreateCommentHandler(c *gin.Context) {
@@ -26,7 +27,7 @@ func CreateCommentHandler(c *gin.Context) {
 		return
 	}
 
-	user, _ := app.GetUserInfo(c)
+	user, _ := app.GetUserInfo(c.Request.Context())
 	cs := service.NewCommentService(c.Request.Context(), svc.NewCommentServiceContext())
 	if err := cs.CreateCommentSrv(&req, user.UID); err != nil {
 		zap.L().Error("CreateCommentSrv failed", zap.Error(err))

@@ -12,6 +12,7 @@ resource/excel/*
 *.log
 # Test binary, built with `go test -c`
 *.test
+data/
 static/dictionary/*
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out

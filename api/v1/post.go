@@ -27,8 +27,8 @@ func CreatePostHandler(c *gin.Context) {
 		app.ResponseErrorWithMsg(c, msg)
 		return
 	}
-	ps := service.NewPostService(c.Request.Context(), svc.NewPostServiceContext())
-	resp, errs := ps.CreatePostSrv(&req)
+
+	resp, errs := service.NewPostService(c.Request.Context(), svc.NewPostServiceContext()).CreatePostSrv(&req)
 	if errs != nil {
 		zap.L().Error("CreatePostSrv failed,err:", zap.Error(errs))
 		app.ResponseErrorWithMsg(c, errs.Error())

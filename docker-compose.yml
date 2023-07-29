@@ -96,3 +96,6 @@ services:
       - server
     depends_on:
       - server
+
+
+

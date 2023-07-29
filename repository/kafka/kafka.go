@@ -21,7 +21,7 @@ type Kafka struct {
 	Client          sarama.Client
 }
 
-var kafkaClient sync.Map
+var kafkaClient = new(sync.Map)
 
 func InitKafka() {
 	for k, v := range setting.Conf.KafKa {
@@ -33,7 +33,6 @@ func InitKafka() {
 			zap.L().Error("newKafkaClient(key, val, scfg) failed:", zap.Error(err))
 			return
 		}
-		fmt.Println(key, kafka)
 		kafkaClient.Store(key, kafka)
 	}
 }

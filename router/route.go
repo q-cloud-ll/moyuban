@@ -53,6 +53,9 @@ func SetupRouter() *gin.Engine {
 	// ---------------- 使用jwt鉴权接口路由 ---------------
 	v1.Use(middlewares.JWTAuth())
 	{
+		v1.GET("user/messages", api.GetMessagesHandler)
+	}
+	{
 		v1.POST("post/post", api.CreatePostHandler)
 		v1.PUT("post/editPost", api.UpdatePostEditHandler)
 		v1.GET("post/editPostDetail", api.GetEditPostDetailHandler)

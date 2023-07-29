@@ -1,13 +1,14 @@
 package v1
 
 import (
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 	"project/service"
 	"project/service/svc"
 	"project/types"
 	"project/utils"
 	"project/utils/app"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func StarPostHandler(c *gin.Context) {
@@ -25,7 +26,7 @@ func StarPostHandler(c *gin.Context) {
 		return
 	}
 
-	u, _ := app.GetUserInfo(c)
+	u, _ := app.GetUserInfo(c.Request.Context())
 	ps := service.NewStarService(c.Request.Context(), svc.NewStarServiceContext())
 	if err := ps.StarPostService(u.UID, &req); err != nil {
 		zap.L().Error("StarPostService failed", zap.Error(err))

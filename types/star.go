@@ -3,8 +3,8 @@ package types
 import "time"
 
 type StarPostReq struct {
-	PostId    int64 `json:"post_id" validate:"required"`
-	Direction int8  `json:"direction,string" validate:"required"`
+	PostId    string `json:"post_id" validate:"required"`
+	Direction int8   `json:"direction,string" validate:"required"`
 }
 
 type StarPostDetail struct {

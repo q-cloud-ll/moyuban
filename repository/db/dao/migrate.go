@@ -11,6 +11,7 @@ func migrate() (err error) {
 			model.Comment{},
 			model.UserStar{},
 			model.Follow{},
+			model.Message{},
 		)
 
 	return

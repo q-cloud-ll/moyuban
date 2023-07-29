@@ -3,6 +3,7 @@ package myburls
 import (
 	"net/url"
 	"project/setting"
+	"strconv"
 	"strings"
 
 	"go.uber.org/zap"
@@ -28,4 +29,12 @@ func IsAnchor(href string) bool {
 
 func AbsUrl(path string) string {
 	return setting.Conf.Host + path
+}
+
+func PostUrl(postId int64) string {
+	return AbsUrl("/post/" + strconv.FormatInt(postId, 10))
+}
+
+func TopicUrl(postId int64) string {
+	return AbsUrl("/topic/" + strconv.FormatInt(postId, 10))
 }

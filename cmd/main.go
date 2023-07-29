@@ -1,10 +1,10 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"project/logger"
 	"project/repository/cache"
+	"project/repository/db/dao"
 	"project/repository/es"
 	"project/repository/kafka"
 	"project/repository/track"
@@ -13,9 +13,6 @@ import (
 	"project/setting/server"
 	"project/utils/snowflake"
 	"project/utils/timer"
-	"time"
-
-	"github.com/IBM/sarama"
 )
 
 // @title go_builder
@@ -34,13 +31,15 @@ func main() {
 	r := router.SetupRouter()
 	server.RunWindowServer(r)
 	fmt.Println("Starting configuration success...")
+
 	_ = r.Run(fmt.Sprintf(":%d", setting.Conf.Port))
+
 }
 
 func loadingConfig() {
 	setting.Init()
 	logger.Init()
-	//dao.InitMysql()
+	dao.InitMysql()
 	cache.InitRedis()
 	es.InitEs()
 	kafka.InitKafka()
@@ -50,27 +49,33 @@ func loadingConfig() {
 	timer.TimeTask()
 	fmt.Println("Loading configuration success...")
 	go scriptStarting()
+	go kafka.StartKafkaConsumer()
 }
 
 func scriptStarting() {
-	time.Sleep(1 * time.Second)
-	// start script
-	key := "disableconsumer"
-	topic := "topic1"
-	err := kafka.SendMessage(key, topic, "topic1 send message test")
-	if err != nil {
-		fmt.Println("Error sending message", err)
-		return
-	}
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	// 使用 Consumer 函数消费指定主题的消息
-	err = kafka.Consumer(ctx, key, topic, func(message *sarama.ConsumerMessage) error {
-		fmt.Printf("Received message: %s\n", message.Value)
-		return nil
-	})
-	if err != nil {
-		fmt.Printf("Failed to consume messages: %s\n", err)
-	}
+	//time.Sleep(2 * time.Second)
+	//// start script
+	//key := "disableconsumer"
+	//topic := "topic1_t"
+	//ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	//defer cancel()
+	//// 使用 Consumer 函数消费指定主题的消息
+	//err := kafka.Consumer(ctx, key, topic, func(message *sarama.ConsumerMessage) error {
+	//	fmt.Printf("Received message: %s\n", message.Value)
+	//	return nil
+	//})
+	//if err != nil {
+	//	fmt.Printf("Failed to consume messages: %s\n", err)
+	//}
+	//for i := 0; i < 3; i++ {
+	//	err := kafka.SendMessage(key, topic, "topic1 send message test"+strconv.Itoa(i))
+	//	if err != nil {
+	//		fmt.Println("Error sending message", err)
+	//		return
+	//	}
+	//	time.Sleep(1 * time.Second)
+	//}
+	//
+	//ch := make(chan struct{})
+	//ch <- struct{}{}
 }

@@ -15,6 +15,8 @@
 - 用户：手机号注册登录 & 用户使用用户名密码注册登录
 - 评论系统设计 ==> 一级评论 & 二级评论
 - docker-compose 一键化编排部署
+- elk日志系统分析
+- elasticsearch进行文章搜索
 
 
 ### 前端的小伙伴也在重构，技术栈使用的是vue3+ts，https://github.com/w021102/moyuban

@@ -66,10 +66,10 @@ jaeger:
   log-spans: true
 
 mysql:
-  host: 124.221.205.130
-  port: 13306
+  host: 127.0.0.1
+  port: 3306
   user: root
-  password: forum123
+  password: moyuban123
   dbname: moyuban
   config: charset=utf8mb4&parseTime=true&loc=Local
   log-mode: "debug"
@@ -78,8 +78,8 @@ mysql:
   max_open_conns: 100
 
 redis:
-  addr: 124.221.205.130:16379
-  password: forum123
+  addr: 127.0.0.1:6379
+  password: moyuban123
   db: 0
   pool_size: 100
 
@@ -112,3 +112,12 @@ kafka:
     write-timeout: 30 # 默认30s
     max-open-requests: 5  # 在发送阻塞之前，允许有多少个未完成的请求，默认为5
     partition: 2 # 分区生成方案 0根据topic进行hash、1随机、2轮询
+
+
+# 邮件服务器配置，用于邮件通知
+Smtp:
+  host: smtp.qq.com
+  port: 25
+  username: 1731691002@qq.com
+  password: qcsj0816.
+  ssl: true

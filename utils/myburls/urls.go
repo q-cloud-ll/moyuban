@@ -38,3 +38,8 @@ func PostUrl(postId int64) string {
 func TopicUrl(postId int64) string {
 	return AbsUrl("/topic/" + strconv.FormatInt(postId, 10))
 }
+
+// 用户主页
+func UserUrl(userId int64) string {
+	return AbsUrl("/user/" + strconv.FormatInt(userId, 10))
+}

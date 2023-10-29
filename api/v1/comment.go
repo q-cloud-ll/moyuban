@@ -1,15 +1,14 @@
 package v1
 
 import (
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"project/consts"
 	"project/service"
 	"project/service/svc"
 	"project/types"
 	"project/utils"
 	"project/utils/app"
-
-	"github.com/gin-gonic/gin"
-	"go.uber.org/zap"
 )
 
 func CreateCommentHandler(c *gin.Context) {
@@ -19,7 +18,6 @@ func CreateCommentHandler(c *gin.Context) {
 		app.ResponseError(c, app.CodeInvalidParam)
 		return
 	}
-
 	msg, err := utils.Validate(c, &req)
 	if err != int64(app.CodeSuccess) {
 		zap.L().Error("CreateCommentHandler validation error", zap.String("err:", msg))

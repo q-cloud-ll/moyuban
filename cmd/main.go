@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/IBM/sarama"
 	"project/logger"
 	"project/repository/cache"
 	"project/repository/db/dao"
@@ -13,6 +15,8 @@ import (
 	"project/setting/server"
 	"project/utils/snowflake"
 	"project/utils/timer"
+	"strconv"
+	"time"
 )
 
 // @title go_builder
@@ -53,29 +57,53 @@ func loadingConfig() {
 }
 
 func scriptStarting() {
-	//time.Sleep(2 * time.Second)
-	//// start script
-	//key := "disableconsumer"
-	//topic := "topic1_t"
-	//ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	//defer cancel()
-	//// 使用 Consumer 函数消费指定主题的消息
-	//err := kafka.Consumer(ctx, key, topic, func(message *sarama.ConsumerMessage) error {
-	//	fmt.Printf("Received message: %s\n", message.Value)
-	//	return nil
-	//})
-	//if err != nil {
-	//	fmt.Printf("Failed to consume messages: %s\n", err)
-	//}
-	//for i := 0; i < 3; i++ {
-	//	err := kafka.SendMessage(key, topic, "topic1 send message test"+strconv.Itoa(i))
-	//	if err != nil {
-	//		fmt.Println("Error sending message", err)
-	//		return
-	//	}
-	//	time.Sleep(1 * time.Second)
-	//}
-	//
-	//ch := make(chan struct{})
-	//ch <- struct{}{}
+	time.Sleep(2 * time.Second)
+	// start script
+	key := "disableconsumer"
+	topic := "topic1_t"
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	// 使用 Consumer 函数消费指定主题的消息
+	err := kafka.Consumer(ctx, key, topic, func(message *sarama.ConsumerMessage) error {
+		fmt.Printf("Received message: %s\n", message.Value)
+		return nil
+	})
+	if err != nil {
+		fmt.Printf("Failed to consume messages: %s\n", err)
+	}
+	for i := 0; i < 3; i++ {
+		err := kafka.SendMessage(key, topic, "topic1 send message test"+strconv.Itoa(i))
+		if err != nil {
+			fmt.Println("Error sending message", err)
+			return
+		}
+		time.Sleep(1 * time.Second)
+	}
+
+	ch := make(chan struct{})
+	ch <- struct{}{}
+}
+
+func quicklySort(nums []int, l, h int) {
+	if l >= h {
+		return
+	}
+	q := partition(nums, l, h)
+	quicklySort(nums, l, q-1)
+	quicklySort(nums, q+1, h)
+}
+
+func partition(nums []int, l, h int) int {
+	pivot := nums[h]
+	i := l
+
+	for j := l; j < h; j++ {
+		if nums[j] < pivot {
+			nums[i], nums[j] = nums[j], nums[i]
+			i++
+		}
+	}
+	nums[i], nums[h] = nums[h], nums[i]
+
+	return i
 }
